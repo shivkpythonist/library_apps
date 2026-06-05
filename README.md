@@ -27,24 +27,6 @@ When using `docker-compose up`, the database schema is initialized **automatical
 docker-compose up
 ```
 
-### Notes & Troubleshooting
-
-- If you see a warning about `Docker Compose requires buildx plugin to be installed`, ensure you have Docker Desktop installed and up-to-date. On macOS, start Docker Desktop: `open /Applications/Docker.app` and wait for the whale icon to finish initializing.
-- If the Postgres data directory already exists the image will skip initialization (message: "Database directory appears to contain a database; Skipping initialization"). To force re-initialize the database remove the volumes and bring the stack down:
-
-```bash
-docker-compose down -v
-docker-compose up --build
-```
-
-- If the frontend build fails due to TypeScript or missing types, I adjusted the project to install dev dependencies during image build. If you still see build issues, run locally to reproduce and fix:
-
-```bash
-cd frontend
-npm install
-npm run build
-```
-
 ### Manual Database Initialization
 If you need to initialize the database separately or run locally:
 
@@ -67,7 +49,7 @@ The script will:
 
 ## Tech Stack
 - Backend: FastAPI, PostgreSQL, SQLAlchemy
-- Frontend: React, Next.js, Axios
+- Frontend: React, Next.js
 - Deployment: Docker Compose
 
 ## Features
