@@ -197,3 +197,43 @@ main {
   margin-bottom: 20px;
   font-weight: 500;
 }
+
+.filter-section {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-section label {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.filter-section select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  flex: 1;
+  max-width: 300px;
+}
+
+.returned-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #eee;
+}
+
+.returned-section h3 {
+  color: #667eea;
+  margin-bottom: 20px;
+}
+
+.returned-row {
+  background-color: #f5f5f5;
+  opacity: 0.8;
+}

@@ -12,16 +12,20 @@ export default function Borrowings() {
   })
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [selectedMemberId, setSelectedMemberId] = useState('')
 
   useEffect(() => {
     fetchBorrowings()
     fetchBooks()
     fetchMembers()
-  }, [])
+  }, [selectedMemberId])
 
   const fetchBorrowings = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/borrowings/`)
+      const url = selectedMemberId 
+        ? `${API_URL}/api/borrowings/?member_id=${selectedMemberId}`
+        : `${API_URL}/api/borrowings/`
+      const response = await axios.get(url)
       setBorrowings(response.data)
     } catch (error) {
       console.error('Error:', error)
@@ -84,6 +88,7 @@ export default function Borrowings() {
   }
 
   const activeBorrowings = borrowings.filter(b => !b.is_returned)
+  const returnedBorrowings = borrowings.filter(b => b.is_returned)
   const getMemberName = (id) => members.find(m => m.id === id)?.name || 'Unknown'
   const getBookTitle = (id) => books.find(b => b.id === id)?.title || 'Unknown'
 
@@ -92,6 +97,15 @@ export default function Borrowings() {
       <h2>Borrowings</h2>
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
+      
+      <div className="filter-section">
+        <label>Filter by Member:</label>
+        <select value={selectedMemberId} onChange={(e) => setSelectedMemberId(e.target.value)}>
+          <option value="">All Members</option>
+          {members.map(m => (<option key={m.id} value={m.id}>{m.name}</option>))}
+        </select>
+      </div>
+
       <form onSubmit={handleSubmit} className="form">
         <select value={formData.member_id} onChange={(e) => setFormData({...formData, member_id: e.target.value})} required>
           <option value="">Select Member</option>
@@ -121,6 +135,28 @@ export default function Borrowings() {
           ))}
         </tbody>
       </table>
+
+      {returnedBorrowings.length > 0 && (
+        <div className="returned-section">
+          <h3>Returned Books History</h3>
+          <table className="table">
+            <thead>
+              <tr><th>Member</th><th>Book</th><th>Borrowed</th><th>Due</th><th>Returned</th></tr>
+            </thead>
+            <tbody>
+              {returnedBorrowings.map(b => (
+                <tr key={b.id} className="returned-row">
+                  <td>{getMemberName(b.member_id)}</td>
+                  <td>{getBookTitle(b.book_id)}</td>
+                  <td>{new Date(b.borrowed_date).toLocaleDateString()}</td>
+                  <td>{new Date(b.due_date).toLocaleDateString()}</td>
+                  <td>{b.returned_date ? new Date(b.returned_date).toLocaleDateString() : '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

@@ -162,3 +162,66 @@ def test_member_can_borrow_same_book_after_returning(client, sample_member, samp
     # Second borrowing should now succeed
     response2 = client.post("/borrowings/", json=borrowing_data)
     assert response2.status_code == status.HTTP_200_OK
+
+
+def test_list_borrowings_with_member_filter(client, sample_borrowing):
+    """Test filtering borrowings by member ID."""
+    response = client.get(f"/borrowings/?member_id={sample_borrowing.member_id}")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) >= 1
+    assert all(b["member_id"] == sample_borrowing.member_id for b in data)
+
+
+def test_list_borrowings_active_only(client, sample_borrowing):
+    """Test filtering for only active borrowings."""
+    response = client.get("/borrowings/?active_only=true")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) >= 1
+    assert all(b["is_returned"] is False for b in data)
+
+
+def test_list_borrowings_returned_only(client, sample_borrowing):
+    """Test filtering for only returned borrowings."""
+    # First return the sample borrowing
+    client.post(f"/borrowings/{sample_borrowing.id}/return")
+    
+    response = client.get("/borrowings/?returned_only=true")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) >= 1
+    assert all(b["is_returned"] is True for b in data)
+
+
+def test_returned_borrowing_has_returned_date(client, sample_borrowing):
+    """Test that returned borrowings have a returned_date recorded."""
+    assert sample_borrowing.returned_date is None
+    
+    response = client.post(f"/borrowings/{sample_borrowing.id}/return")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["is_returned"] is True
+    assert data["returned_date"] is not None
+
+
+def test_get_member_borrowings_with_filter(client, sample_member, sample_book):
+    """Test getting all borrowings (active and returned) for a member."""
+    due_date = (datetime.utcnow() + timedelta(days=14)).isoformat()
+    
+    # Create first borrowing and return it
+    borrow1_data = {
+        "member_id": sample_member.id,
+        "book_id": sample_book.id,
+        "due_date": due_date
+    }
+    response1 = client.post("/borrowings/", json=borrow1_data)
+    borrowing1_id = response1.json()["id"]
+    client.post(f"/borrowings/{borrowing1_id}/return")
+    
+    # Get all borrowings for member (active_only=false)
+    response = client.get(f"/borrowings/member/{sample_member.id}?active_only=false")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) >= 1
+    assert all(b["member_id"] == sample_member.id for b in data)

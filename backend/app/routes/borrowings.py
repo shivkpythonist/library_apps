@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from datetime import datetime
 from ..models import Borrowing, Book, Member
@@ -45,17 +45,38 @@ def create_borrowing(borrowing: BorrowingCreate, db: Session = Depends(get_db)):
     return db_borrowing
 
 @router.get("/", response_model=list[BorrowingResponse])
-def list_borrowings(db: Session = Depends(get_db)):
-    """List all borrowing records"""
-    return db.query(Borrowing).all()
+def list_borrowings(
+    member_id: int = Query(None, description="Filter by member ID"),
+    returned_only: bool = Query(False, description="Show only returned books"),
+    active_only: bool = Query(False, description="Show only active borrowings"),
+    db: Session = Depends(get_db)
+):
+    """List borrowing records with optional filters"""
+    query = db.query(Borrowing)
+    
+    if member_id:
+        query = query.filter(Borrowing.member_id == member_id)
+    
+    if active_only:
+        query = query.filter(Borrowing.is_returned == False)
+    elif returned_only:
+        query = query.filter(Borrowing.is_returned == True)
+    
+    return query.all()
 
 @router.get("/member/{member_id}", response_model=list[BorrowingResponse])
-def get_member_borrowings(member_id: int, db: Session = Depends(get_db)):
-    """Get active borrowings for a member"""
-    return db.query(Borrowing).filter(
-        Borrowing.member_id == member_id,
-        Borrowing.is_returned == False
-    ).all()
+def get_member_borrowings(
+    member_id: int,
+    active_only: bool = Query(True, description="Show only active borrowings"),
+    db: Session = Depends(get_db)
+):
+    """Get borrowings for a specific member"""
+    query = db.query(Borrowing).filter(Borrowing.member_id == member_id)
+    
+    if active_only:
+        query = query.filter(Borrowing.is_returned == False)
+    
+    return query.all()
 
 @router.post("/{borrowing_id}/return", response_model=BorrowingResponse)
 def return_book(borrowing_id: int, db: Session = Depends(get_db)):
