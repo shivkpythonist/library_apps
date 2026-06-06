@@ -237,3 +237,16 @@ main {
   background-color: #f5f5f5;
   opacity: 0.8;
 }
+
+.field-error {
+  display: block;
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.input-error {
+  border-color: #e74c3c !important;
+  background-color: #fff5f5;
+}
