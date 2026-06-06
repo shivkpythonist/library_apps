@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_members_email ON members(email);
 INSERT INTO members (name, email, phone, address, is_active)
 VALUES 
   ('Shiv Kumar', 'shiv@example.com', '+91-9800000000', '123 Tech Street, Bangalore', true),
-  ('Amit Singh', 'amit@example.com', '+91-987000', '456 Code Avenue, Delhi', true)
+  ('Amit Singh', 'amit@example.com', '+91-9870000000', '456 Code Avenue, Delhi', true)
 ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample IT books
