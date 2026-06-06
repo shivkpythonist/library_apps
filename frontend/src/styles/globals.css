@@ -175,3 +175,25 @@ main {
   font-size: 48px;
   font-weight: bold;
 }
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-left: 4px solid #e74c3c;
+  color: #c0392b;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.success-message {
+  background-color: #efe;
+  border: 1px solid #cfc;
+  border-left: 4px solid #27ae60;
+  color: #229954;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}

@@ -10,6 +10,8 @@ export default function Borrowings() {
   const [formData, setFormData] = useState({
     member_id: '', book_id: '', due_date: ''
   })
+  const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     fetchBorrowings()
@@ -46,6 +48,8 @@ export default function Borrowings() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    setSuccessMessage('')
     try {
       await axios.post(`${API_URL}/api/borrowings/`, {
         member_id: parseInt(formData.member_id),
@@ -53,19 +57,28 @@ export default function Borrowings() {
         due_date: formData.due_date + 'T00:00:00'
       })
       setFormData({ member_id: '', book_id: '', due_date: '' })
+      setSuccessMessage('Book borrowed successfully!')
+      setTimeout(() => setSuccessMessage(''), 3000)
       fetchBorrowings()
       fetchBooks()
     } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Error recording borrowing'
+      setError(errorMessage)
       console.error('Error:', error)
     }
   }
 
   const handleReturn = async (id) => {
     try {
+      setError('')
       await axios.post(`${API_URL}/api/borrowings/${id}/return`)
+      setSuccessMessage('Book returned successfully!')
+      setTimeout(() => setSuccessMessage(''), 3000)
       fetchBorrowings()
       fetchBooks()
     } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Error returning book'
+      setError(errorMessage)
       console.error('Error:', error)
     }
   }
@@ -77,6 +90,8 @@ export default function Borrowings() {
   return (
     <div className="section">
       <h2>Borrowings</h2>
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success-message">{successMessage}</div>}
       <form onSubmit={handleSubmit} className="form">
         <select value={formData.member_id} onChange={(e) => setFormData({...formData, member_id: e.target.value})} required>
           <option value="">Select Member</option>
