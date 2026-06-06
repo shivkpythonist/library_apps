@@ -1,4 +1,4 @@
-# 📚 Library Management System
+# 📚 Neighborhood Library Service
 
 A complete library management system with FastAPI backend and Next.js frontend.
 

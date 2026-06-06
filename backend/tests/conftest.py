@@ -1,4 +1,4 @@
-"""Pytest configuration and fixtures for Library Management System tests."""
+"""Pytest configuration and fixtures for Neighborhood Library Service tests."""
 
 import pytest
 from fastapi.testclient import TestClient

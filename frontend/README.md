@@ -1,4 +1,4 @@
-# Library Management System - Frontend
+# Neighborhood Library Service - Frontend
 
 ## Overview
 React application with Next.js for library management.

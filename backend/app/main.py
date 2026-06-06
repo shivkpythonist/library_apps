@@ -7,7 +7,7 @@ from .routes import books_router, members_router, borrowings_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Library Management System API",
+    title="Neighborhood Library Service API",
     description="A complete library management system API",
     version="1.0.0"
 )
@@ -30,7 +30,7 @@ app.include_router(borrowings_router)
 def read_root():
     """Root endpoint"""
     return {
-        "message": "Welcome to Library Management System API",
+        "message": "Welcome to Neighborhood Library Service API",
         "docs": "/docs",
         "redoc": "/redoc"
     }

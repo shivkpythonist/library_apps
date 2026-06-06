@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="container">
       <header>
-        <h1>📚 Library Management System</h1>
+        <h1>📚 Neighborhood Library Service</h1>
       </header>
 
       <nav className="tabs">

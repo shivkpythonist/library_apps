@@ -1,4 +1,4 @@
-# Library Management System - Backend API
+# Neighborhood Library Service - Backend API
 
 ## Overview
 REST API server built with FastAPI and PostgreSQL.

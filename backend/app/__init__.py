@@ -1,1 +1,1 @@
-"""Library Management System Backend Application"""
+"""Neighborhood Library Service Backend Application"""
