@@ -120,3 +120,45 @@ def test_overdue_borrowing(client, sample_member, sample_book):
     data = response.json()
     # Check if the borrowing was created (API should allow it)
     assert data["member_id"] == sample_member.id
+
+
+def test_member_cannot_borrow_same_book_twice(client, sample_member, sample_book):
+    """Test that a member cannot borrow the same book twice with active borrowing."""
+    due_date = (datetime.utcnow() + timedelta(days=14)).isoformat()
+    borrowing_data = {
+        "member_id": sample_member.id,
+        "book_id": sample_book.id,
+        "due_date": due_date
+    }
+    
+    # First borrowing should succeed
+    response1 = client.post("/borrowings/", json=borrowing_data)
+    assert response1.status_code == status.HTTP_200_OK
+    
+    # Second borrowing of same book should fail
+    response2 = client.post("/borrowings/", json=borrowing_data)
+    assert response2.status_code == status.HTTP_400_BAD_REQUEST
+    assert "already has an active borrowing" in response2.json()["detail"]
+
+
+def test_member_can_borrow_same_book_after_returning(client, sample_member, sample_book):
+    """Test that a member can borrow the same book again after returning it."""
+    due_date = (datetime.utcnow() + timedelta(days=14)).isoformat()
+    borrowing_data = {
+        "member_id": sample_member.id,
+        "book_id": sample_book.id,
+        "due_date": due_date
+    }
+    
+    # First borrowing
+    response1 = client.post("/borrowings/", json=borrowing_data)
+    assert response1.status_code == status.HTTP_200_OK
+    borrowing1_id = response1.json()["id"]
+    
+    # Return the book
+    response_return = client.post(f"/borrowings/{borrowing1_id}/return")
+    assert response_return.status_code == status.HTTP_200_OK
+    
+    # Second borrowing should now succeed
+    response2 = client.post("/borrowings/", json=borrowing_data)
+    assert response2.status_code == status.HTTP_200_OK
